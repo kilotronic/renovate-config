@@ -1,0 +1,67 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Shared Renovate rules: Actions pinned to commits, pre-commit pins moved, the kilotronic check tools in one update, weekly, Python held. Merges nothing by itself; extend :automerge as well where required CI gates merges.",
+  "extends": [
+    "config:recommended",
+    ":semanticCommitTypeAll(chore)",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "schedule": ["before 9am on monday"],
+  "timezone": "America/Los_Angeles",
+  "pre-commit": {
+    "enabled": true
+  },
+  "copier": {
+    "description": "Off: .copier-answers.yml names a private template by copier's gh: shorthand and pins a commit id, not a tag, so the copier manager only logs lookup failures. Turn it on here once the answers point at tagged public templates.",
+    "enabled": false
+  },
+  "rebaseWhen": "conflicted",
+  "minimumReleaseAge": "3 days",
+  "minimumReleaseAgeBehaviour": "timestamp-required",
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "minimumReleaseAge": null,
+    "labels": ["security"],
+    "schedule": ["at any time"]
+  },
+  "packageRules": [
+    {
+      "description": "Python (uv, pip) minor and patch updates in one PR.",
+      "matchManagers": ["pep621", "pip_requirements", "pep723"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "python deps"
+    },
+    {
+      "description": "npm minor and patch updates in one PR.",
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "npm deps"
+    },
+    {
+      "description": "GitHub Actions updates in one PR.",
+      "matchManagers": ["github-actions"],
+      "groupName": "github-actions"
+    },
+    {
+      "description": "The kilotronic check tools move together: each is pinned in more than one place (an Action or reusable workflow in CI, a pre-commit rev), and a PR per manager would move one pin and leave the other behind. Matches the separate tool repos and kilotronic/checks, which merges them. Must stay the last grouping rule: later packageRules win, so a grouping rule below would split the pins again.",
+      "matchPackageNames": [
+        "/^kilotronic/(checks|lint|git-identity|secret-scan|data-leak-check|vendored-license-check|red-on-logic)(/|$)/"
+      ],
+      "matchManagers": ["github-actions", "pre-commit", "custom.regex"],
+      "groupName": "kilotronic check tools"
+    },
+    {
+      "description": "Dotted releases only for the check tools, in every manager. Each also keeps a moving major tag (v1); a bare major offered to one manager and not the other is the skew the group exists to prevent.",
+      "matchPackageNames": [
+        "/^kilotronic/(checks|lint|git-identity|secret-scan|data-leak-check|vendored-license-check|red-on-logic)(/|$)/"
+      ],
+      "allowedVersions": "/^v\\d+\\.\\d+\\.\\d+$/"
+    },
+    {
+      "description": "Python itself moves by hand, only when a bump is needed; patches still flow. Every home (.python-version, Docker base images, setup-python) has the dep name python, so this one rule holds them all.",
+      "matchDepNames": ["python"],
+      "matchUpdateTypes": ["major", "minor"],
+      "enabled": false
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "local>kilotronic/renovate-config",
+    "local>kilotronic/renovate-config:automerge"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "The validator CI runs, pinned by npx in ci.yml; no built-in manager reads an npx argument.",
+      "managerFilePatterns": [".github/workflows/ci.yml"],
+      "matchStrings": [
+        "npx --yes --package (?<depName>renovate)@(?<currentValue>\\d+\\.\\d+\\.\\d+)"
+      ],
+      "datasourceTemplate": "npm"
+    }
+  ]
+}
