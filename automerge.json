@@ -1,0 +1,13 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Merge non-major updates once CI passes. Only for repos whose default branch requires CI: GitHub's auto-merge waits for the required checks, and Renovate's own merge waits for every check to be green.",
+  "automergeStrategy": "squash",
+  "platformAutomerge": true,
+  "packageRules": [
+    {
+      "description": "Minor, patch, pin and digest updates merge themselves when checks pass; majors wait for a person.",
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
+    }
+  ]
+}
