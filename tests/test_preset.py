@@ -141,6 +141,10 @@ def test_automerge_preset_merges_non_major_only_when_checks_pass():
     assert set(rule["matchUpdateTypes"]) == {"minor", "patch", "pin", "digest"}
     assert AUTOMERGE["automergeStrategy"] == "squash"  # the only merge method allowed
     assert AUTOMERGE.get("ignoreTests") is not True
+    # GitHub's own auto-merge waits for the required checks only, so a red check that
+    # isn't required (git-identity in some repos) would not stop it. Renovate's merge
+    # waits for every check to be green.
+    assert AUTOMERGE["platformAutomerge"] is False
 
 
 def test_own_validator_pin_is_kept_current():

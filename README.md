@@ -39,8 +39,9 @@ Leave out the `:automerge` line in a repo whose default branch does not require 
 - Holds Python minor and major versions (`.python-version`, Docker base images,
   `setup-python`): those move by hand when needed. Patches still flow.
 
-`automerge.json`: minor, patch, pin and digest updates merge themselves (squash) once checks
-pass; majors wait for a person.
+`automerge.json`: minor, patch, pin and digest updates merge themselves (squash) once every
+check is green, required or not (Renovate merges them itself, not through GitHub's auto-merge,
+which waits for required checks only); majors wait for a person.
 
 A repo adds its own rules after the `extends` line. Renovate applies later rules last, so keep
 any grouping rule for the check tools in this preset, not in the repo.
